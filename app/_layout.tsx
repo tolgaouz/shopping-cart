@@ -6,6 +6,7 @@ import * as SecureStore from "expo-secure-store";
 import { RootSiblingParent } from "react-native-root-siblings";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "../lib/query-client";
+import { StripeProvider } from "@stripe/stripe-react-native";
 
 const CLERK_PUBLISHABLE_KEY =
   "pk_test_bWVycnktcHl0aG9uLTE1LmNsZXJrLmFjY291bnRzLmRldiQ";
@@ -55,7 +56,13 @@ const RootLayout = () => {
         tokenCache={tokenCache}
       >
         <QueryClientProvider client={queryClient}>
-          <InitialLayout />
+          <StripeProvider
+            publishableKey="pk_test_51P61EmAYZ52pP8QjxoHDV3esH7WrUo4QvACwwkhYlNWyhPKbUANGAMcOchzMou1yhDfLZtNP4ciNDX0pZK30ij0A00HWekhkeU"
+            urlScheme="shoppingCart" // required for 3D Secure and bank redirects
+            merchantIdentifier="merchant.com.shoppingCart" // required for Apple Pay
+          >
+            <InitialLayout />
+          </StripeProvider>
         </QueryClientProvider>
       </ClerkProvider>
     </RootSiblingParent>

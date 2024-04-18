@@ -1,11 +1,11 @@
 {
   "expo": {
-    "scheme": "acme",
+    "scheme": "shoppingCart",
     "web": {
       "bundler": "metro"
     },
-    "name": "clerkApp",
-    "slug": "clerkApp",
+    "name": "shoppingCart",
+    "slug": "shoppingCart",
     "plugins": [
       "expo-router"
     ]

@@ -8,6 +8,7 @@ export const fetcher = async (endpoint: string, init?: RequestInit) => {
   return fetch(`${SERVER_URL + endpoint}`, {
     headers: {
       Authorization: `Bearer ${await Clerk.session.getToken()}`,
+      "Content-Type": "application/json",
       ...headers,
     },
     ...restInit,
