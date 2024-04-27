@@ -7,6 +7,11 @@ import { RootSiblingParent } from "react-native-root-siblings";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "../lib/query-client";
 import { StripeProvider } from "@stripe/stripe-react-native";
+import {
+  useFonts,
+  Inter_400Regular,
+  Inter_600SemiBold,
+} from "@expo-google-fonts/inter";
 
 const CLERK_PUBLISHABLE_KEY =
   "pk_test_bWVycnktcHl0aG9uLTE1LmNsZXJrLmFjY291bnRzLmRldiQ";
@@ -15,6 +20,10 @@ const InitialLayout = () => {
   const { isLoaded, isSignedIn } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+  const [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_600SemiBold,
+  });
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -27,6 +36,10 @@ const InitialLayout = () => {
       router.replace("/login");
     }
   }, [isSignedIn]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return <Slot />;
 };

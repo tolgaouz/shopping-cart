@@ -1,9 +1,11 @@
 import React from "react";
-import { Button, TextInput, View, StyleSheet } from "react-native";
+import { View, Text } from "react-native";
 import { useSignUp } from "@clerk/clerk-expo";
 import Spinner from "react-native-loading-spinner-overlay";
 import { useState } from "react";
 import { Stack } from "expo-router";
+import { PasswordInput, TextInput } from "../../components/ui/text-input";
+import { Button } from "../../components/ui/button";
 
 const Register = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -61,33 +63,41 @@ const Register = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex flex-col grow items-center justify-center bg-white">
       <Stack.Screen options={{ headerBackVisible: !pendingVerification }} />
       <Spinner visible={loading} />
 
       {!pendingVerification && (
-        <>
-          <TextInput
-            autoCapitalize="none"
-            placeholder="me@tolgaoguz.dev"
-            value={emailAddress}
-            onChangeText={setEmailAddress}
-            style={styles.inputField}
-          />
-          <TextInput
-            placeholder="password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            style={styles.inputField}
-          />
+        <View className="flex flex-col w-full grow items-center justify-center px-8 gap-8">
+          <View className="w-full space-y-8">
+            <Text className="text-black font-inter-semibold text-xl text-left">
+              Register to start using the Shopping Cart App!
+            </Text>
+            <Text className="font-inter">
+              Please provide your credentials. You'll receive a verification
+              code to your email.
+            </Text>
+          </View>
+          <View className="w-full">
+            <Text className="mb-4">Email</Text>
+            <TextInput
+              placeholder="me@tolgaoguz.dev"
+              value={emailAddress}
+              onChangeText={setEmailAddress}
+            />
+          </View>
 
-          <Button
-            onPress={onSignUpPress}
-            title="Sign up"
-            color={"#6c47ff"}
-          ></Button>
-        </>
+          <View className="w-full">
+            <Text className="mb-4">Password</Text>
+            <PasswordInput value={password} onChangeText={setPassword} />
+          </View>
+
+          <View className="w-full">
+            <Button onPress={onSignUpPress}>
+              <Text className="text-white font-inter font-lg">Sign up</Text>
+            </Button>
+          </View>
+        </View>
       )}
 
       {pendingVerification && (
@@ -96,40 +106,16 @@ const Register = () => {
             <TextInput
               value={code}
               placeholder="Code..."
-              style={styles.inputField}
               onChangeText={setCode}
             />
           </View>
-          <Button
-            onPress={onPressVerify}
-            title="Verify Email"
-            color={"#6c47ff"}
-          ></Button>
+          <Button onPress={onPressVerify}>
+            <Text>Verify Email</Text>
+          </Button>
         </>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 20,
-  },
-  inputField: {
-    marginVertical: 4,
-    height: 50,
-    borderWidth: 1,
-    borderColor: "#6c47ff",
-    borderRadius: 4,
-    padding: 10,
-    backgroundColor: "#fff",
-  },
-  button: {
-    margin: 8,
-    alignItems: "center",
-  },
-});
 
 export default Register;

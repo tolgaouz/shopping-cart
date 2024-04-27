@@ -1,15 +1,10 @@
 import { useSignIn } from "@clerk/clerk-expo";
 import { Link } from "expo-router";
 import React, { useState } from "react";
-import {
-  View,
-  StyleSheet,
-  TextInput,
-  Button,
-  Pressable,
-  Text,
-} from "react-native";
+import { View, Pressable, Text } from "react-native";
 import Spinner from "react-native-loading-spinner-overlay";
+import { PasswordInput, TextInput } from "../../components/ui/text-input";
+import { Button } from "../../components/ui/button";
 
 const Login = () => {
   const { signIn, setActive, isLoaded } = useSignIn();
@@ -39,58 +34,46 @@ const Login = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex grow flex-col items-start justify-center px-8 pr-16 bg-white gap-8">
       <Spinner visible={loading} />
-      <TextInput
-        autoCapitalize="none"
-        placeholder="me@tolgaoguz.dev"
-        value={emailAddress}
-        onChangeText={setEmailAddress}
-        style={styles.inputField}
-      />
-      <TextInput
-        placeholder="password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.inputField}
-      />
+      <Text className="text-black text-xl font-inter-semibold text-left">
+        Welcome to Shopping Cart App
+      </Text>
+      <Text>Please provide your credentials to login.</Text>
 
-      <Button onPress={onSignInPress} title="Login" color={"#6c47ff"}></Button>
+      <View className="w-full">
+        <Text className="mb-4">Email</Text>
+        <TextInput
+          placeholder="me@tolgaoguz.dev"
+          value={emailAddress}
+          onChangeText={setEmailAddress}
+          autoCapitalize="none"
+        />
+      </View>
+
+      <View className="w-full">
+        <Text className="mb-4">Password</Text>
+        <PasswordInput value={password} onChangeText={setPassword} />
+      </View>
+
+      <View className="w-full">
+        <Button onPress={onSignInPress}>
+          <Text className="text-white font-inter text-base">Login</Text>
+        </Button>
+      </View>
 
       <Link href="/reset" asChild>
-        <Pressable style={styles.button}>
+        <Pressable>
           <Text>Forgot password?</Text>
         </Pressable>
       </Link>
       <Link href="/register" asChild>
-        <Pressable style={styles.button}>
+        <Pressable>
           <Text>Create Account</Text>
         </Pressable>
       </Link>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 20,
-  },
-  inputField: {
-    marginVertical: 4,
-    height: 50,
-    borderWidth: 1,
-    borderColor: "#6c47ff",
-    borderRadius: 4,
-    padding: 10,
-    backgroundColor: "#fff",
-  },
-  button: {
-    margin: 8,
-    alignItems: "center",
-  },
-});
 
 export default Login;
