@@ -14,8 +14,8 @@ export const LogoutButton = () => {
   };
 
   return (
-    <Pressable onPress={doLogout} style={{ marginRight: 10 }}>
-      <Ionicons name="log-out-outline" size={24} color={"#fff"} />
+    <Pressable onPress={doLogout}>
+      <Ionicons name="log-out-outline" size={24} color={"black"} />
     </Pressable>
   );
 };
@@ -37,10 +37,8 @@ const TabsPage = () => {
             [lastItemsCount, itemsCount]
           );
 
-          console.log("has new items", hasNewItems);
-
           return (
-            <View className="relative h-12 mt-6 flex flex-row items-center justify-center">
+            <View className="relative h-12 mt-6 flex flex-row items-center justify-center border-b border-neutral-200">
               {props.back && (
                 <Pressable
                   className="absolute my-auto left-4"
@@ -59,16 +57,22 @@ const TabsPage = () => {
               </Text>
 
               {props.route.name !== "cart" && (
-                <Pressable
-                  onPress={() => {
-                    props.navigation.navigate("cart");
-                    // Reset notification bubble
-                    setLastItemsCount(itemsCount);
-                  }}
-                  className="absolute my-auto right-4"
-                >
-                  <Feather name="shopping-cart" size={20} color="black" />
-                </Pressable>
+                <View className="absolute my-auto right-4 flex flex-row space-x-2 items-center">
+                  <View className="flex-1">
+                    <LogoutButton />
+                  </View>
+                  <View className="flex-1">
+                    <Pressable
+                      onPress={() => {
+                        props.navigation.navigate("cart");
+                        // Reset notification bubble
+                        setLastItemsCount(itemsCount);
+                      }}
+                    >
+                      <Feather name="shopping-cart" size={20} color="black" />
+                    </Pressable>
+                  </View>
+                </View>
               )}
             </View>
           );

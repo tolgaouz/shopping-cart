@@ -37,7 +37,6 @@ export const usePaymentSheetDetails = () => {
 };
 
 export const notifyCheckoutSuccess = async (params: PaymentSheetBody) => {
-  console.log("notifying backend");
   return fetcher("/checkout/success", {
     method: "POST",
     body: JSON.stringify(params),

@@ -1,120 +1,140 @@
-import React, { useMemo, useCallback, memo, useState } from "react";
-import { View, TextInput, Button, StyleSheet, Modal } from "react-native";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import { useShoeFilterValues } from "../hooks/use-shoes";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { TextInput } from "./ui/text-input";
+import { Button } from "./ui/button";
+import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
+import { Ionicons } from "@expo/vector-icons";
+import { useShirtFilterValues } from "../hooks/use-shirts";
 
 export interface FilterInputs {
   minPrice?: string;
   maxPrice?: string;
+  color?: string;
+  material?: string;
 }
 
-const FilterModal = memo(
-  ({
-    visible,
-    onClose,
-    onApply,
-  }: {
-    visible: boolean;
-    onClose: () => void;
-    onApply: (filters: FilterInputs) => void;
-  }) => {
-    console.log("visible", visible);
-    const { data: filtersData, isLoading } = useShoeFilterValues();
-    const [filters, setFilters] = useState<{
-      minPrice?: string;
-      maxPrice?: string;
-    }>({});
+export const FilterPicker = ({
+  onClose,
+  onApply,
+}: {
+  onClose: () => void;
+  onApply: (filters: FilterInputs) => void;
+}) => {
+  const { data: filtersData, isLoading } = useShirtFilterValues();
+  const [filters, setFilters] = useState<{
+    minPrice?: string;
+    maxPrice?: string;
+  }>({});
+  // ref
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
-    const snapPoints = useMemo(() => ["50%", "80%"], []);
+  // variables
+  const snapPoints = useMemo(() => ["50%", "75%"], []);
 
-    const handleClosePress = useCallback(() => {
-      onClose();
-    }, [onClose]);
+  // callbacks
+  const openModal = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
 
-    return (
-      <Modal visible={visible} transparent={true} animationType="slide">
-        <BottomSheet
-          index={1}
-          snapPoints={snapPoints}
-          onClose={handleClosePress}
+  const closeModal = useCallback(() => {
+    bottomSheetModalRef.current?.dismiss();
+  }, []);
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log("handleSheetChanges", index);
+  }, []);
+
+  // renders
+  return (
+    <View className="ml-2">
+      <TouchableOpacity
+        className="h-8 w-8 rounded-full border border-neutral-300 flex items-center justify-center"
+        onPress={openModal}
+      >
+        <Ionicons name="filter-outline" size={16} color="black" />
+      </TouchableOpacity>
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        index={1}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+      >
+        <BottomSheetView
+          style={{
+            flexGrow: 1,
+            paddingTop: 16,
+            paddingBottom: 16,
+            paddingHorizontal: 16,
+          }}
         >
-          <BottomSheetView style={styles.container}>
-            <TextInput
-              style={styles.input}
-              placeholder="Min Price"
-              value={filters?.minPrice}
-              inputMode="numeric"
-              onChangeText={(minPrice) =>
-                setFilters((p) => ({
-                  ...p,
-                  minPrice: minPrice ? minPrice : undefined,
-                }))
-              }
-              keyboardType="numeric"
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Max Price"
-              value={filters.maxPrice}
-              inputMode="numeric"
-              onChangeText={(maxPrice) =>
-                setFilters((p) => ({
-                  ...p,
-                  maxPrice: maxPrice ? maxPrice : undefined,
-                }))
-              }
-              keyboardType="numeric"
-            />
-            <View style={styles.buttonContainer}>
-              <Button
-                title="Reset"
-                onPress={() => {
-                  setFilters({});
-                  onApply({});
-                  onClose();
-                }}
-                color="#d9534f"
-              />
-              <Button
-                title="Close"
-                onPress={handleClosePress}
-                color="#6c757d"
-              />
-              <Button
-                title="Apply"
-                onPress={() => {
-                  onClose();
-                  onApply(filters);
-                }}
-                color="#6c757d"
-              />
+          <View className="flex flex-col flex-1">
+            <View className="flex flex-row space-x-4">
+              <View className="w-full flex flex-col flex-1">
+                <Text className="mb-4">Min. Price</Text>
+                <TextInput
+                  placeholder="Min Price"
+                  value={filters?.minPrice}
+                  inputMode="numeric"
+                  onChangeText={(minPrice) =>
+                    setFilters((p) => ({
+                      ...p,
+                      minPrice: minPrice ? minPrice : undefined,
+                    }))
+                  }
+                  keyboardType="numeric"
+                />
+              </View>
+              <View className="w-full flex flex-col flex-1">
+                <Text className="mb-4">Min. Price</Text>
+                <TextInput
+                  placeholder="Max Price"
+                  value={filters.maxPrice}
+                  inputMode="numeric"
+                  onChangeText={(maxPrice) =>
+                    setFilters((p) => ({
+                      ...p,
+                      maxPrice: maxPrice ? maxPrice : undefined,
+                    }))
+                  }
+                  keyboardType="numeric"
+                />
+              </View>
             </View>
-          </BottomSheetView>
-        </BottomSheet>
-      </Modal>
-    );
-  },
-  (prev, next) => {
-    return prev.visible === next.visible;
-  }
-);
+          </View>
+          <View className="flex flex-row justify-between space-x-4">
+            <Button
+              onPress={() => {
+                setFilters({});
+                onApply({});
+                closeModal();
+              }}
+              variant="outline"
+              className="flex-1"
+            >
+              <Text>Reset</Text>
+            </Button>
+            <Button variant="outline" className="flex-1" onPress={closeModal}>
+              <Text>Close</Text>
+            </Button>
+            <Button
+              className="flex-1"
+              onPress={() => {
+                onClose();
+                onApply(filters);
+                closeModal();
+              }}
+            >
+              <Text className="text-white">Apply</Text>
+            </Button>
+          </View>
+        </BottomSheetView>
+      </BottomSheetModal>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    zIndex: 20,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ced4da",
-    padding: 10,
-    marginBottom: 20,
-    borderRadius: 5,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  contentContainer: {
+    flex: 1,
+    alignItems: "center",
   },
 });
-
-export default FilterModal;
