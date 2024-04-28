@@ -4,9 +4,9 @@ import { TextInput } from "./ui/text-input";
 import { Button } from "./ui/button";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
-import { useShirtFilterValues } from "../hooks/use-shirts";
-import { Dropdown } from "react-native-element-dropdown";
+import { SortBy, useShirtFilterValues } from "../hooks/use-shirts";
 import { Select } from "./ui/select";
+import { RadioButtonGroup } from "./ui/radio-group";
 
 export interface FilterInputs {
   minPrice?: string;
@@ -16,11 +16,9 @@ export interface FilterInputs {
 }
 
 export const FilterPicker = ({
-  onClose,
   onApply,
 }: {
-  onClose: () => void;
-  onApply: (filters: FilterInputs) => void;
+  onApply: (filters: FilterInputs, sortBy: SortBy) => void;
 }) => {
   const { data: filtersData, isLoading } = useShirtFilterValues();
   const [filters, setFilters] = useState<{
@@ -29,6 +27,7 @@ export const FilterPicker = ({
     material?: string;
     color?: string;
   }>({});
+  const [sortBy, setSortBy] = useState<SortBy>("price-asc");
   // ref
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
@@ -147,11 +146,43 @@ export const FilterPicker = ({
               </View>
             </View>
           </View>
+          <View>
+            <RadioButtonGroup
+              data={[
+                {
+                  id: "price-asc",
+                  label: "Price Ascending",
+                  value: "price-asc",
+                },
+                {
+                  id: "price-desc",
+                  label: "Price Descending",
+                  value: "price-desc",
+                },
+                {
+                  id: "title-asc",
+                  label: "Shirt Name Ascending",
+                  value: "title-asc",
+                },
+                {
+                  id: "title-desc",
+                  label: "Shirt Name Descending",
+                  value: "title-desc",
+                },
+              ]}
+              layout="column"
+              onChange={(value) => {
+                console.log("value", value);
+                setSortBy(value as SortBy);
+              }}
+              selectedId={sortBy}
+            />
+          </View>
           <View className="flex flex-row justify-between space-x-4">
             <Button
               onPress={() => {
                 setFilters({});
-                onApply({});
+                onApply({}, "price-asc");
                 closeModal();
               }}
               variant="outline"
@@ -165,8 +196,7 @@ export const FilterPicker = ({
             <Button
               className="flex-1"
               onPress={() => {
-                onClose();
-                onApply(filters);
+                onApply(filters, sortBy);
                 closeModal();
               }}
             >

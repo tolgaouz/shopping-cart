@@ -10,6 +10,8 @@ export interface Shirt {
   stock?: number;
 }
 
+export type SortBy = "price-asc" | "price-desc" | "title-asc" | "title-desc";
+
 export interface FetchShirtsParams {
   limit?: number;
   page?: number;
@@ -18,6 +20,8 @@ export interface FetchShirtsParams {
   minPrice?: number;
   maxPrice?: number;
   search?: string;
+  sortBy?: "price" | "title";
+  sortOrder?: "asc" | "desc";
 }
 
 export interface Pagination {

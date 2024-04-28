@@ -1,29 +1,34 @@
-import {
-  View,
-  ActivityIndicator,
-  TouchableOpacity,
-  StyleSheet,
-  Text,
-} from "react-native";
+import { View, ActivityIndicator, StyleSheet, Text } from "react-native";
 import React, { useCallback, useState } from "react";
 import Product from "../../components/product";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FlatList } from "react-native-gesture-handler";
 import SearchBar from "../../components/search-bar";
-import { FetchShirtsParams, Shirt, useShirts } from "../../hooks/use-shirts";
+import {
+  FetchShirtsParams,
+  Shirt,
+  SortBy,
+  useShirts,
+} from "../../hooks/use-shirts";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { FilterPicker } from "../../components/filter-picker";
 
 const Home = () => {
   const [search, setSearch] = useState("");
-  const [filtersVisible, setFiltersVisible] = useState(false);
   const [filters, setShoeFilters] = useState<
     Omit<FetchShirtsParams, "page" | "limit">
   >({});
+  const [sortBy, setSortBy] = useState<SortBy>();
   const { data, isFetching, fetchNextPage } = useShirts({
     search,
     ...filters,
+    ...(sortBy
+      ? {
+          sortBy: sortBy.split("-")[0] as "price" | "title",
+          sortOrder: sortBy.split("-")[1] as "asc" | "desc",
+        }
+      : undefined),
   });
 
   const renderFooter = useCallback(() => {
@@ -71,8 +76,7 @@ const Home = () => {
         <View className="flex flex-row space-x-4 items-center">
           <SearchBar text={search} onChangeText={setSearch} />
           <FilterPicker
-            onClose={() => setFiltersVisible(false)}
-            onApply={(filters) => {
+            onApply={(filters, sortBy) => {
               setShoeFilters(() => {
                 const { minPrice, maxPrice, color, material } = filters;
                 return {
@@ -82,6 +86,7 @@ const Home = () => {
                   material: material,
                 };
               });
+              setSortBy(sortBy);
             }}
           />
         </View>
