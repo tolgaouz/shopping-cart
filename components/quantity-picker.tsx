@@ -1,5 +1,6 @@
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import React from "react";
+import { Button } from "./ui/button";
 
 const QuantityPicker: React.FC<{
   stock: number;
@@ -24,38 +25,20 @@ const QuantityPicker: React.FC<{
   };
 
   return (
-    <View style={styles.quantityPicker}>
-      <TouchableOpacity onPress={decrement} style={styles.quantityButton}>
-        <Text style={styles.quantityButtonText}>-</Text>
-      </TouchableOpacity>
-      <Text style={styles.quantityText}>{quantity}</Text>
-      <TouchableOpacity onPress={increment} style={styles.quantityButton}>
-        <Text style={styles.quantityButtonText}>+</Text>
-      </TouchableOpacity>
+    <View className="flex-row items-center justify-between mt-2.5">
+      <Button onPress={decrement} className="w-6" variant="outline">
+        <Text className="text-black text-lg font-inter">-</Text>
+      </Button>
+      <Text className="mx-5 text-sm">{quantity}</Text>
+      <Button
+        onPress={increment}
+        className="w-6 flex justify-center items-center"
+        variant="outline"
+      >
+        <Text className="text-black text-lg font-inter">+</Text>
+      </Button>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  quantityPicker: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 10,
-  },
-  quantityButton: {
-    backgroundColor: "#007bff",
-    padding: 5,
-    borderRadius: 5,
-  },
-  quantityButtonText: {
-    color: "#fff",
-    fontSize: 20,
-  },
-  quantityText: {
-    marginHorizontal: 20,
-    fontSize: 16,
-  },
-});
 
 export default QuantityPicker;

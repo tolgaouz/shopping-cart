@@ -5,6 +5,8 @@ import { Button } from "./ui/button";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
 import { useShirtFilterValues } from "../hooks/use-shirts";
+import { Dropdown } from "react-native-element-dropdown";
+import { Select } from "./ui/select";
 
 export interface FilterInputs {
   minPrice?: string;
@@ -24,12 +26,14 @@ export const FilterPicker = ({
   const [filters, setFilters] = useState<{
     minPrice?: string;
     maxPrice?: string;
+    material?: string;
+    color?: string;
   }>({});
   // ref
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   // variables
-  const snapPoints = useMemo(() => ["50%", "75%"], []);
+  const snapPoints = useMemo(() => ["50%", "90%"], []);
 
   // callbacks
   const openModal = useCallback(() => {
@@ -66,10 +70,10 @@ export const FilterPicker = ({
             paddingHorizontal: 16,
           }}
         >
-          <View className="flex flex-col flex-1">
+          <View className="flex flex-col flex-1 space-y-6">
             <View className="flex flex-row space-x-4">
               <View className="w-full flex flex-col flex-1">
-                <Text className="mb-4">Min. Price</Text>
+                <Text className="mb-2">Min. Price</Text>
                 <TextInput
                   placeholder="Min Price"
                   value={filters?.minPrice}
@@ -84,7 +88,7 @@ export const FilterPicker = ({
                 />
               </View>
               <View className="w-full flex flex-col flex-1">
-                <Text className="mb-4">Min. Price</Text>
+                <Text className="mb-2">Min. Price</Text>
                 <TextInput
                   placeholder="Max Price"
                   value={filters.maxPrice}
@@ -96,6 +100,49 @@ export const FilterPicker = ({
                     }))
                   }
                   keyboardType="numeric"
+                />
+              </View>
+            </View>
+            <View className="flex flex-row h-20">
+              <View className="flex flex-col flex-1">
+                <Text className="mb-2">Material</Text>
+                <Select
+                  data={
+                    filtersData?.materials.map((m) => ({
+                      label: m,
+                      value: m,
+                    })) ?? []
+                  }
+                  selected={filters.material}
+                  onSelect={(value) =>
+                    setFilters((p) => ({
+                      ...p,
+                      material: !p.material ? value : undefined,
+                    }))
+                  }
+                  iconName="shirt-outline"
+                />
+              </View>
+            </View>
+            <View className="flex flex-row h-20">
+              <View className="flex flex-col flex-1">
+                <Text className="mb-2">Color</Text>
+                <Select
+                  data={
+                    filtersData?.colors.map((m) => ({
+                      label: m,
+                      value: m,
+                    })) ?? []
+                  }
+                  selected={filters.color}
+                  onSelect={(value) =>
+                    setFilters((p) => ({
+                      ...p,
+                      color: !p.color ? value : undefined,
+                    }))
+                  }
+                  iconName="color-palette"
+                  maxHeight={200}
                 />
               </View>
             </View>
@@ -131,10 +178,3 @@ export const FilterPicker = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    flex: 1,
-    alignItems: "center",
-  },
-});

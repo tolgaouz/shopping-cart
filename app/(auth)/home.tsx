@@ -5,12 +5,12 @@ import {
   StyleSheet,
   Text,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import Product from "../../components/product";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FlatList } from "react-native-gesture-handler";
 import SearchBar from "../../components/search-bar";
-import { FetchShirtsParams, useShirts } from "../../hooks/use-shirts";
+import { FetchShirtsParams, Shirt, useShirts } from "../../hooks/use-shirts";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { FilterPicker } from "../../components/filter-picker";
@@ -26,12 +26,16 @@ const Home = () => {
     ...filters,
   });
 
-  const renderFooter = () => {
+  const renderFooter = useCallback(() => {
     return isFetching ? (
       <View style={{ marginTop: 10, alignItems: "center" }}>
         <ActivityIndicator size="large" color="#1f1f1f" />
       </View>
-    ) : (
+    ) : null;
+  }, [isFetching]);
+
+  const renderEmpty = useCallback(() => {
+    return isFetching ? null : (
       <View className="flex grow mt-12 flex-col space-y-8 px-4 items-center justify-center text-center">
         <Ionicons name="shirt-outline" size={36} color="black" />
         <Text className="text-lg font-inter">There are no shirts to show</Text>
@@ -40,7 +44,26 @@ const Home = () => {
         </Text>
       </View>
     );
-  };
+  }, [isFetching]);
+
+  const renderItem = useCallback(
+    ({ item, index }: { item: Shirt; index: number }) => {
+      return (
+        <View
+          className={`flex basis-1/2 py-2 ${index % 2 === 0 ? "pr-2" : "pl-2"}`}
+        >
+          <Product
+            title={item.title}
+            id={item.id}
+            imageUrl={item.image}
+            price={item.price}
+            stock={item.stock}
+          />
+        </View>
+      );
+    },
+    []
+  );
 
   return (
     <BottomSheetModalProvider>
@@ -51,10 +74,12 @@ const Home = () => {
             onClose={() => setFiltersVisible(false)}
             onApply={(filters) => {
               setShoeFilters(() => {
-                const { minPrice, maxPrice } = filters;
+                const { minPrice, maxPrice, color, material } = filters;
                 return {
                   minPrice: minPrice ? Number(minPrice) * 100 : undefined,
                   maxPrice: maxPrice ? Number(maxPrice) * 100 : undefined,
+                  color: color,
+                  material: material,
                 };
               });
             }}
@@ -66,21 +91,7 @@ const Home = () => {
             contentContainerStyle={{}}
             data={(data?.pages ?? []).flatMap((page) => page.shirts)}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item, index }) => (
-              <View
-                className={`flex basis-1/2 py-2 ${
-                  index % 2 === 0 ? "pr-2" : "pl-2"
-                }`}
-              >
-                <Product
-                  title={item.title}
-                  id={item.id}
-                  imageUrl={item.image}
-                  price={item.price}
-                  stock={item.stock}
-                />
-              </View>
-            )}
+            renderItem={renderItem}
             numColumns={2}
             initialNumToRender={10}
             horizontal={false}
@@ -88,6 +99,7 @@ const Home = () => {
             onEndReached={() => {
               fetchNextPage();
             }}
+            ListEmptyComponent={renderEmpty}
             ListFooterComponent={renderFooter}
           />
         </View>
